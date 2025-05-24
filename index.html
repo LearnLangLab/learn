@@ -153,6 +153,8 @@
   </select>
 
   <button id="toggleTheme" onclick="toggleTheme()">🌙 Nền tối</button>
+  <audio id="bgMusic" src="PianoMusic.mp3" loop></audio>
+  <button id="musicToggle" onclick="toggleMusic()">🎵</button>
 
   <h2>🎮</h2>
   <div id="hanzi">加载中...</div>
@@ -223,9 +225,11 @@
           if (opt === currentQuestion.meaning) {
             btn.classList.add("correct");
             correctCount++;
+            document.getElementById("tingSound").play();
           } else {
             btn.classList.add("wrong");
             wrongCount++;
+            document.getElementById("wrongSound").play();
           }
 
           updateScoreboard();
@@ -268,6 +272,20 @@
       localStorage.setItem("theme", darkMode ? "dark" : "light");
     }
 
+    // bật tắt nhạc
+    function toggleMusic() {
+      const audio = document.getElementById("bgMusic");
+      const btn = document.getElementById("musicToggle");
+      if (audio.paused) {
+        audio.play();
+        btn.textContent = "🔇";
+      } else {
+        audio.pause();
+        btn.textContent = "🎵";
+      }
+    }
+
+    // đọc tiếng
     function speakCurrent() {
       if (!currentQuestion || !currentQuestion.hanzi) return;
 
@@ -283,10 +301,21 @@
         document.body.classList.add("dark");
         document.getElementById("toggleTheme").textContent = "☀️ Nền sáng";
       }
+      // khôi phục level dang hoc
       const savedLevel = localStorage.getItem("hskLevel") || "1"; // Mặc định chọn HSK1 khi tải trang
       document.getElementById("levelSelector").value = savedLevel;
       changeLevel(savedLevel);
+      
+      //tu dong phat nhac
+      const audio = document.getElementById("bgMusic");
+      audio.volume = 0.25;
     };
   </script>
+  <audio id="tingSound">
+    <source src="ting.mp3" type="audio/mp3">
+  </audio>
+  <audio id="wrongSound">
+    <source src="wrong.mp3" type="audio/mp3">
+  </audio>
 </body>
 </html>
