@@ -240,6 +240,7 @@
     }
 
     function changeLevel(level) {
+      localStorage.setItem("hskLevel", level); // <-- lưu cấp độ
       if (currentScript) {
         document.body.removeChild(currentScript);
       }
@@ -282,8 +283,9 @@
         document.body.classList.add("dark");
         document.getElementById("toggleTheme").textContent = "☀️ Nền sáng";
       }
-
-      changeLevel(1); // Mặc định chọn HSK1 khi tải trang
+      const savedLevel = localStorage.getItem("hskLevel") || "1"; // Mặc định chọn HSK1 khi tải trang
+      document.getElementById("levelSelector").value = savedLevel;
+      changeLevel(savedLevel);
     };
   </script>
 </body>
