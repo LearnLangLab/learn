@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game học từ vựng tiếng Trung</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      color: #000;
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.dark {
+      background: #121212;
+      color: #fff;
+    }
+
+    #scoreboard {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background-color: #fff;
+      color: #000;
+      padding: 8px 12px;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      font-size: 14px;
+      z-index: 1000;
+    }
+
+    body.dark #scoreboard {
+      background-color: #333;
+      color: #fff;
+    }
+
+    #levelSelector {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      font-size: 14px;
+      padding: 5px 10px;
+      z-index: 1000;
+    }
+
+    #toggleTheme {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      font-size: 14px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    h2 {
+      font-size: 24px;
+      margin-top: 60px;
+    }
+
+    #hanzi {
+      font-size: 40px;
+      margin: 10px 0;
+    }
+
+    #pinyin {
+      font-size: 22px;
+      margin-bottom: 20px;
+      /* color: #555; */
+      color: red;
+    }
+
+    body.dark #pinyin {
+      color: #ff6666; /* đỏ nhạt để nổi hơn trên nền đen */
+    }
+
+    .option {
+      display: block;
+      margin: 8px auto;
+      padding: 12px;
+      width: 90%;
+      max-width: 300px;
+      background-color: #fff;
+      border: 2px solid #444;
+      border-radius: 10px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    body.dark .option {
+      background-color: #333;
+      color: #fff;
+      border-color: #999;
+    }
+
+    .correct {
+      border: 3px solid #2e7d32 !important;
+      background-color: transparent !important;
+    }
+
+    .wrong {
+      border: 3px solid #c62828 !important;
+      background-color: transparent !important;
+    }
+    .correct, .wrong {
+      border-radius: 10px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    }
+
+    #next {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="scoreboard">
+    ✅ Đúng: <span id="correct">0</span><br>
+    ❌ Sai: <span id="wrong">0</span>
+  </div>
+
+  <select id="levelSelector" onchange="changeLevel(this.value)">
+    <option value="1">HSK1-từ</option>
+    <option value="11">HSK1-câu</option>
+    <option value="2">HSK2-từ</option>
+    <option value="12">HSK2-câu</option>
+    <option value="3">HSK3-từ</option>
+    <option value="13">HSK3-câu</option>
+    <option value="4">HSK4-từ</option>
+    <option value="14">HSK4-câu</option>
+    <option value="5">HSK5-từ</option>
+    <option value="15">HSK5-câu</option>
+    <option value="6">HSK6-từ</option>
+    <option value="16">HSK6-câu</option>
+  </select>
+
+  <button id="toggleTheme" onclick="toggleTheme()">🌙 Nền tối</button>
+
+  <h2>🎮</h2>
+  <div id="hanzi">加载中...</div>
+  <div id="pinyin"></div>
+  <div id="options"></div>
+  <button id="next" onclick="nextQuestion()">Câu tiếp</button>
+
+  <script>
+    let vocab = [];
+    let currentScript;
+    let currentQuestion;
+    let correctCount = 0;
+    let wrongCount = 0;
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function updateScoreboard() {
+      document.getElementById("correct").textContent = correctCount;
+      document.getElementById("wrong").textContent = wrongCount;
+    }
+
+    function showQuestion() {
+      document.getElementById("next").style.display = "none";
+      const optionsDiv = document.getElementById("options");
+      optionsDiv.innerHTML = "";
+
+      if (!vocab || vocab.length === 0) {
+        document.getElementById("hanzi").innerText = "Không có dữ liệu!";
+        document.getElementById("pinyin").innerText = "";
+        return;
+      }
+
+      currentQuestion = vocab[Math.floor(Math.random() * vocab.length)];
+      document.getElementById("hanzi").innerText = currentQuestion.hanzi;
+      document.getElementById("pinyin").innerText = currentQuestion.pinyin;
+
+      let options = [currentQuestion.meaning];
+      while (options.length < 3) {
+        const random = vocab[Math.floor(Math.random() * vocab.length)].meaning;
+        if (!options.includes(random)) options.push(random);
+      }
+      shuffle(options);
+
+      options.forEach((opt) => {
+        const btn = document.createElement("button");
+        btn.className = "option";
+        btn.innerText = opt;
+        btn.onclick = () => {
+          const buttons = document.querySelectorAll(".option");
+
+          buttons.forEach(b => {
+            b.disabled = true;
+            if (b.innerText === currentQuestion.meaning) {
+              b.classList.add("correct");
+            }
+          });
+
+          if (opt === currentQuestion.meaning) {
+            btn.classList.add("correct");
+            correctCount++;
+          } else {
+            btn.classList.add("wrong");
+            wrongCount++;
+          }
+
+          updateScoreboard();
+          document.getElementById("next").style.display = "inline-block";
+        };
+        optionsDiv.appendChild(btn);
+      });
+    }
+
+    function nextQuestion() {
+      showQuestion();
+    }
+
+    function changeLevel(level) {
+      if (currentScript) {
+        document.body.removeChild(currentScript);
+      }
+
+      const script = document.createElement("script");
+      script.src = `hsk${level}_vocab.js`;
+      script.onload = () => {
+        correctCount = 0;
+        wrongCount = 0;
+        updateScoreboard();
+        nextQuestion();
+      };
+      script.onerror = () => {
+        alert("Không thể tải dữ liệu cho HSK " + level);
+        vocab = [];
+        showQuestion();
+      };
+      document.body.appendChild(script);
+      currentScript = script;
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("dark");
+      const btn = document.getElementById("toggleTheme");
+      btn.textContent = document.body.classList.contains("dark") ? "☀️ Nền sáng" : "🌙 Nền tối";
+    }
+
+    window.onload = () => {
+      changeLevel(1);
+    };
+  </script>
+</body>
+</html>
