@@ -312,6 +312,7 @@
 
       const utterance = new SpeechSynthesisUtterance(currentQuestion.hanzi);
       utterance.lang = 'zh-CN'; // Giọng tiếng Trung
+      utterance.rate = 0.7;     // Tốc độ đọc chậm (mặc định là 1.0)
 
       speechSynthesis.speak(utterance);
     }
