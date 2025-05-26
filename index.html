@@ -35,6 +35,7 @@
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
       font-size: 14px;
       z-index: 1000;
+      text-align: left;
     }
 
     body.dark #scoreboard {
@@ -154,7 +155,7 @@
 <body>
 
   <div id="scoreboard">
-    ✅ Đúng: <span id="correct">0</span><br>
+    ✅ Đúng: <span id="correct">0</span> / <span id="total">0</span><br>
     ❌  Sai: <span id="wrong">0</span>
   </div>
 
@@ -203,6 +204,7 @@
     function updateScoreboard() {
       document.getElementById("correct").textContent = correctCount;
       document.getElementById("wrong").textContent = wrongCount;
+      document.getElementById("total").textContent = vocab.length;
     }
 
     function showQuestion() {
@@ -210,17 +212,24 @@
       const optionsDiv = document.getElementById("options");
       optionsDiv.innerHTML = "";
 
+      // Lọc ra các câu chưa trả lời đúng
+      const remainingVocab = vocab.filter(item => !answeredCorrectHanzi.includes(item.hanzi));
+
+      if (!remainingVocab || remainingVocab.length === 0) {
+        document.getElementById("hanzi").innerText = "🎉 Bạn đã hoàn thành tất cả từ vựng!";
+        document.getElementById("pinyin").innerText = "";
+        return;
+      }
+
       if (!vocab || vocab.length === 0) {
         document.getElementById("hanzi").innerText = "Không có dữ liệu!";
         document.getElementById("pinyin").innerText = "";
         return;
       }
-
-      currentQuestion = vocab[Math.floor(Math.random() * vocab.length)];
+      // Random 1 câu từ các câu chưa làm
+      currentQuestion = remainingVocab[Math.floor(Math.random() * remainingVocab.length)];
       document.getElementById("hanzi").innerText = currentQuestion.hanzi;
-      // document.getElementById("pinyin").innerText = currentQuestion.pinyin;
       document.getElementById("pinyinText").innerText = currentQuestion.pinyin;
-
 
       let options = [currentQuestion.meaning];
       while (options.length < 3) {
@@ -247,6 +256,12 @@
             btn.classList.add("correct");
             correctCount++;
             document.getElementById("tingSound").play();
+
+            // ✅ Thêm hanzi vào danh sách đã làm đúng
+            if (!answeredCorrectHanzi.includes(currentQuestion.hanzi)) {
+              answeredCorrectHanzi.push(currentQuestion.hanzi);
+            }
+
           } else {
             btn.classList.add("wrong");
             wrongCount++;
@@ -265,7 +280,16 @@
     }
 
     function changeLevel(level) {
-      localStorage.setItem("hskLevel", level); // <-- lưu cấp độ
+      // 🧹 Reset kết quả và dữ liệu cũ
+      correctCount = 0;
+      wrongCount = 0;
+      answeredCorrectHanzi = [];
+      updateScoreboard();
+      localStorage.removeItem('answeredCorrectHanzi');
+
+      // ✅ Lưu level đang học
+      localStorage.setItem("hskLevel", level);
+      // ⚙️ Tải dữ liệu từ file js
       if (currentScript) {
         document.body.removeChild(currentScript);
       }
