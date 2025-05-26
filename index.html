@@ -241,8 +241,7 @@
       currentQuestion = remainingVocab[Math.floor(Math.random() * remainingVocab.length)];
       document.getElementById("hanzi").innerText = currentQuestion.hanzi;
       document.getElementById("pinyinText").innerText = currentQuestion.pinyin;
-      // 🔊 Đọc câu ngay sau khi hiện ra
-      speakCurrent();
+
 
       let options = [currentQuestion.meaning];
       while (options.length < 3) {
@@ -290,6 +289,8 @@
 
     function nextQuestion() {
       showQuestion();
+      // 🔊 Đọc câu ngay sau khi hiện ra
+      speakCurrent();
     }
 
     function changeLevel(level) {
