@@ -100,12 +100,14 @@
       padding: 12px;
       width: 90%;
       max-width: 300px;
+      min-width: 200px;
       background-color: #fff;
       border: 2px solid #444;
       border-radius: 10px;
       font-size: 18px;
       cursor: pointer;
       transition: background 0.2s;
+      display: inline-block;
     }
 
     body.dark .option {
@@ -119,6 +121,19 @@
       color: #fff;
     }
 
+    .option-wrapper {
+      display: flex;
+      align-items: center;
+    }
+
+    .option-label {
+      display: inline-block;
+      width: 30px;
+      text-align: right;
+      margin-right: 8px;
+      font-weight: bold;
+      font-size: 18px;
+    }
     .correct {
       border: 3px solid #2e7d32 !important;
       background-color: transparent !important;
@@ -251,13 +266,28 @@
       }
       shuffle(options);
 
-      options.forEach((opt) => {
+      const numberIcons = [" 1.", " 2.", "3."];
+      // Lặp qua tất cả các lựa chọn (đáp án)
+      options.forEach((opt,index) => {
+
+        // Tạo wrapper
+        const wrapper = document.createElement("div");
+        wrapper.className = "option-wrapper";
+
+        // Tạo nhãn số
+        const numberSpan = document.createElement("span");
+        numberSpan.className = "option-label";
+        numberSpan.innerText = numberIcons[index];
+
+        // Tạo một nút bấm mới cho mỗi đáp án
         const btn = document.createElement("button");
-        btn.className = "option";
-        btn.innerText = opt;
+        btn.className = "option"; // Gán class để định dạng CSS
+        btn.innerText = opt; // Hiển thị chữ (nghĩa) của đáp án lên nút
+
+        //Xử lý khi người dùng chọn đáp án đó
         btn.onclick = () => {
           const buttons = document.querySelectorAll(".option");
-
+          // Disable tất cả các nút, đồng thời tô màu nút đúng
           buttons.forEach(b => {
             b.disabled = true;
             if (b.innerText === currentQuestion.meaning) {
@@ -265,6 +295,7 @@
             }
           });
 
+          // Kiểm tra nếu người dùng chọn đúng đáp án
           if (opt === currentQuestion.meaning) {
             btn.classList.add("correct");
             correctCount++;
@@ -284,6 +315,8 @@
           updateScoreboard();
           document.getElementById("next").style.display = "inline-block";
         };
+        optionsDiv.appendChild(wrapper);
+        optionsDiv.appendChild(numberSpan);
         optionsDiv.appendChild(btn);
       });
     }
@@ -359,12 +392,26 @@
       speechSynthesis.speak(utterance);
     }
 
+    // ✅ Phím 0            : để đọc lại câu hiện tại
+    // ⏩ Phím Enter        : để qua câu tiếp theo sau khi đã trả lời
+    // ➡️ Phím mũi tên phải : để qua câu tiếp theo (xem như trả lời đúng)
+    // 🔢 Phím 1, 2, 3      : để chọn đáp án tương ứng
     document.addEventListener("keydown", function(event) {
-      // ✅ Bổ sung: Phím Space để đọc lại câu hiện tại
-      if (event.code === "Space" && !event.target.matches("input, textarea")) {
+      // ✅ Bổ sung: Phím 0 để đọc lại câu hiện tại
+      if ((event.code === "Digit0" || event.code === "Numpad0") && !event.target.matches("input, textarea")) {
         event.preventDefault(); // Tránh scroll trang
         speakCurrent();
       }
+
+      // ⏩ Phím Enter để qua câu tiếp theo sau khi đã trả lời
+      if ((event.code === "Enter" || event.code === "NumpadEnter") && !event.target.matches("input, textarea")) {
+        event.preventDefault();
+        const nextBtn = document.getElementById("next");
+        if (nextBtn && nextBtn.style.display !== "none") {
+          nextQuestion();
+        }
+      }
+
       // ➡️ Phím mũi tên phải để qua câu tiếp theo (xem như trả lời đúng)
       if (event.code === "ArrowRight" && !event.target.matches("input, textarea")) {
         event.preventDefault();
@@ -374,6 +421,23 @@
           updateScoreboard();
         }
         nextQuestion();
+      }
+
+      function selectAnswer(index) {
+        const buttons = document.querySelectorAll('.option');
+        if (buttons[index]) {
+          buttons[index].click();
+        }
+      }
+      // 🔢 Phím 1, 2, 3 để chọn đáp án tương ứng
+      if (!event.target.matches("input, textarea")) {
+        if (event.code === "Digit1" || event.code === "Numpad1") {
+          selectAnswer(0);
+        } else if (event.code === "Digit2" || event.code === "Numpad2") {
+          selectAnswer(1);
+        } else if (event.code === "Digit3" || event.code === "Numpad3") {
+          selectAnswer(2);
+        }
       }
     });
     window.onload = () => {
