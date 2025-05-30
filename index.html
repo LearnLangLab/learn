@@ -134,6 +134,12 @@
       font-weight: bold;
       font-size: 18px;
     }
+    /* Ẩn nhãn số trên thiết bị có chiều rộng nhỏ hơn hoặc bằng 600px (điện thoại) */
+    @media (max-width: 600px) {
+      .option-label {
+        display: none;
+      }
+    }
     .correct {
       border: 3px solid #2e7d32 !important;
       background-color: transparent !important;
