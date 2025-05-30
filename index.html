@@ -359,6 +359,23 @@
       speechSynthesis.speak(utterance);
     }
 
+    document.addEventListener("keydown", function(event) {
+      // ✅ Bổ sung: Phím Space để đọc lại câu hiện tại
+      if (event.code === "Space" && !event.target.matches("input, textarea")) {
+        event.preventDefault(); // Tránh scroll trang
+        speakCurrent();
+      }
+      // ➡️ Phím mũi tên phải để qua câu tiếp theo (xem như trả lời đúng)
+      if (event.code === "ArrowRight" && !event.target.matches("input, textarea")) {
+        event.preventDefault();
+        if (currentQuestion && !answeredCorrectHanzi.includes(currentQuestion.hanzi)) {
+          answeredCorrectHanzi.push(currentQuestion.hanzi);
+          correctCount++;
+          updateScoreboard();
+        }
+        nextQuestion();
+      }
+    });
     window.onload = () => {
       // Khôi phục giao diện đã chọn
       if (localStorage.getItem("theme") === "dark") {
