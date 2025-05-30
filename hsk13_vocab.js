@@ -181,7 +181,7 @@ vocab = [
 { hanzi: '其他人都已经走了', pinyin: 'Qítā rén dōu yǐjīng zǒu le', meaning: 'Những người khác đều đã đi rồi' },
 { hanzi: '这个事情很奇怪', pinyin: 'Zhège shìqíng hěn qíguài', meaning: 'Chuyện này rất kỳ lạ' },
 { hanzi: '我需要一支铅笔', pinyin: 'Wǒ xūyào yī zhī qiānbǐ', meaning: 'Tôi cần một cây bút chì' },
-{ hanzi: '我不太清楚他的名字', pinyin: 'Wǒ bù tài qīngchǔ tā de míngzi', meaning: 'Tôi không rõ tên của anh ấy lắm' },
+{ hanzi: '我不太清楚他的名字', pinyin: 'Wǒ bù tài qīngchǔ tā de míngzì', meaning: 'Tôi không rõ tên của anh ấy lắm' },
 { hanzi: '秋天是我最喜欢的季节', pinyin: 'Qiūtiān shì wǒ zuì xǐhuān de jìjié', meaning: 'Mùa thu là mùa tôi thích nhất' },
 { hanzi: '她穿了一条红色的裙子', pinyin: 'Tā chuān le yī tiáo hóngsè de qúnzi', meaning: 'Cô ấy mặc một chiếc váy đỏ' },
 { hanzi: '我们吃完饭然后去看电影', pinyin: 'Wǒmen chī wán fàn ránhòu qù kàn diànyǐng', meaning: 'Chúng tôi ăn xong rồi đi xem phim' },
