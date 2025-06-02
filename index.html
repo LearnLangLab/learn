@@ -405,7 +405,7 @@
     // ⬇️ Phím mũi tên xuống: ghi nhận sai và qua câu tiếp theo
     document.addEventListener("keydown", function(event) {
       // ✅ Bổ sung: Phím 0 để đọc lại câu hiện tại
-      if ((event.code === "Digit0" || event.code === "Numpad0") && !event.target.matches("input, textarea")) {
+      if ((event.code === "Digit0" || event.code === "Numpad0" || event.code === "ArrowUp") && !event.target.matches("input, textarea")) {
         event.preventDefault(); // Tránh scroll trang
         speakCurrent();
       }
