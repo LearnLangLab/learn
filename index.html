@@ -402,6 +402,7 @@
     // ⏩ Phím Enter        : để qua câu tiếp theo sau khi đã trả lời
     // ➡️ Phím mũi tên phải : để qua câu tiếp theo (xem như trả lời đúng)
     // 🔢 Phím 1, 2, 3      : để chọn đáp án tương ứng
+    // ⬇️ Phím mũi tên xuống: ghi nhận sai và qua câu tiếp theo
     document.addEventListener("keydown", function(event) {
       // ✅ Bổ sung: Phím 0 để đọc lại câu hiện tại
       if ((event.code === "Digit0" || event.code === "Numpad0") && !event.target.matches("input, textarea")) {
@@ -424,6 +425,15 @@
         if (currentQuestion && !answeredCorrectHanzi.includes(currentQuestion.hanzi)) {
           answeredCorrectHanzi.push(currentQuestion.hanzi);
           correctCount++;
+          updateScoreboard();
+        }
+        nextQuestion();
+      }
+      // ⬇️ Phím mũi tên xuống: ghi nhận sai và qua câu tiếp theo
+      if (event.code === "ArrowDown" && !event.target.matches("input, textarea")) {
+        event.preventDefault();
+        if (currentQuestion && !answeredCorrectHanzi.includes(currentQuestion.hanzi)) {
+          wrongCount++;
           updateScoreboard();
         }
         nextQuestion();
