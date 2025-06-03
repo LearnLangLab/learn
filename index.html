@@ -403,6 +403,8 @@
     // ➡️ Phím mũi tên phải : để qua câu tiếp theo (xem như trả lời đúng)
     // 🔢 Phím 1, 2, 3      : để chọn đáp án tương ứng
     // ⬇️ Phím mũi tên xuống: ghi nhận sai và qua câu tiếp theo
+    // Ctrl + B              : đổi hình nền
+    let currentBgIndex = -1; // -1 nghĩa là đang dùng background mặc định
     document.addEventListener("keydown", function(event) {
       // ✅ Bổ sung: Phím 0 để đọc lại câu hiện tại
       if ((event.code === "Digit0" || event.code === "Numpad0" || event.code === "ArrowUp") && !event.target.matches("input, textarea")) {
@@ -453,6 +455,21 @@
           selectAnswer(1);
         } else if (event.code === "Digit3" || event.code === "Numpad3") {
           selectAnswer(2);
+        }
+      }
+      
+      // Kiểm tra nếu Ctrl + B được nhấn
+      if (event.ctrlKey && event.key === "b") {
+        event.preventDefault(); // Ngăn trình duyệt mở bookmark
+
+        if (currentBgIndex === -1) {
+          // Từ nền mặc định → chuyển sang hình đầu tiên
+          currentBgIndex = 0;
+          document.body.style.backgroundImage = "url('code_bg.png')";
+        } else {
+          // Nếu đang dùng hình nền → quay về nền mặc định
+          currentBgIndex = -1;
+          document.body.style.backgroundImage = "none";
         }
       }
     });
