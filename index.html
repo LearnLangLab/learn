@@ -184,7 +184,7 @@
   </style>
 </head>
 <body>
-
+  <div id="gameContainer">  <!-- cho hết nội dung vào một div 'gameContainer' để ẩn toàn bộ nội dung khi ấn phím 7 -->
   <div id="scoreboard">
     ✅ Đúng: <span id="correct">0</span> / <span id="total">0</span><br>
     ❌  Sai: <span id="wrong">0</span>
@@ -399,6 +399,7 @@
     }
 
     // ✅ Phím 0            : để đọc lại câu hiện tại
+    //    Phím 7            : ẩn toàn bộ nội dung body
     //    Phím 8            : ẩn chữ tiếng trung
     //    Phím 9            : ẩn chữ pinyin
     // ⏩ Phím Enter        : để qua câu tiếp theo sau khi đã trả lời
@@ -408,6 +409,16 @@
     // Ctrl + B              : đổi hình nền
     let currentBgIndex = -1; // -1 nghĩa là đang dùng background mặc định
     document.addEventListener("keydown", function(event) {
+
+      // nút số 7 sẽ ẩn toàn bộ trang
+      if ((event.code === "Digit7" || event.code === "Numpad7") && !event.target.matches("input, textarea")) {
+        event.preventDefault();
+        const gameContainer = document.getElementById("gameContainer");
+        if (gameContainer) {
+          gameContainer.style.display = gameContainer.style.display === "none" ? "block" : "none";
+        }
+      }
+
       // Nút 8 để ẩn chữ tiếng hoa
       if ((event.code === "Digit8" || event.code === "Numpad8") && !event.target.matches("input, textarea")) {
         event.preventDefault();
@@ -515,5 +526,6 @@
     <source src="wrong.mp3" type="audio/mp3">
   </audio>
   <!-- <a href="https://me.momo.vn/MRIBTbs5FesoCVFqumfnCd" target="_blank" id="donateBtn">Ủng hộ ☕</a> -->
+  </div>
 </body>
 </html>
