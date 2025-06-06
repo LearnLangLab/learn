@@ -399,6 +399,8 @@
     }
 
     // ✅ Phím 0            : để đọc lại câu hiện tại
+    //    Phím 8            : ẩn chữ tiếng trung
+    //    Phím 9            : ẩn chữ pinyin
     // ⏩ Phím Enter        : để qua câu tiếp theo sau khi đã trả lời
     // ➡️ Phím mũi tên phải : để qua câu tiếp theo (xem như trả lời đúng)
     // 🔢 Phím 1, 2, 3      : để chọn đáp án tương ứng
@@ -406,6 +408,23 @@
     // Ctrl + B              : đổi hình nền
     let currentBgIndex = -1; // -1 nghĩa là đang dùng background mặc định
     document.addEventListener("keydown", function(event) {
+      // Nút 8 để ẩn chữ tiếng hoa
+      if ((event.code === "Digit8" || event.code === "Numpad8") && !event.target.matches("input, textarea")) {
+        event.preventDefault();
+        const hanzi = document.getElementById("hanzi");
+        if (hanzi) {
+          hanzi.style.display = hanzi.style.display === "none" ? "inline" : "none";
+        }
+      }
+
+      // Nút 9 để ẩn chữ tiếng hoa
+      if ((event.code === "Digit9" || event.code === "Numpad9") && !event.target.matches("input, textarea")) {
+        event.preventDefault();
+        const pinyinText = document.getElementById("pinyinText");
+        if (pinyinText) {
+          pinyinText.style.display = pinyinText.style.display === "none" ? "inline" : "none";
+        }
+      }
       // ✅ Bổ sung: Phím 0 để đọc lại câu hiện tại
       if ((event.code === "Digit0" || event.code === "Numpad0" || event.code === "ArrowUp") && !event.target.matches("input, textarea")) {
         event.preventDefault(); // Tránh scroll trang
