@@ -211,6 +211,7 @@
     <option value="scoreboard">Thành tích</option>
     <!-- <option value="knownButton">Yes</option> -->
     <option value="skipButton">Skip</option>
+    <option value="bgButton">Chọn/Xóa nền</option>
   </select>
   <!-- chọn level -->
   <select id="levelSelector" onchange="changeLevel(this.value)">
@@ -233,6 +234,8 @@
   <button id="toggleTheme" onclick="toggleTheme()">🌙 Nền tối</button>
   <audio id="bgMusic" src="PianoMusic.mp3" loop></audio>
   <button id="musicToggle" onclick="toggleMusic()">🎵</button>
+  <input type="file" id="bgInput" accept="image/*" style="display: none" />
+  <button id="bgButton" onclick="handleBackgroundClick()">Chọn/Xóa nền</button>
 
   <!-- <h2>🎮</h2> -->
   <h2></h2>
@@ -572,7 +575,47 @@
       //tu dong phat nhac
       const audio = document.getElementById("bgMusic");
       audio.volume = 0.25;
+
+      // lưu thay đổi hình nền
+      const savedBg = localStorage.getItem("customBackground");
+      if (savedBg) {
+        document.body.style.backgroundImage = `url(${savedBg})`;
+        document.body.style.backgroundSize = "cover";
+        backgroundSet = true;
+      }
     };
+
+    /// thay đổi hình nền
+    let backgroundSet = false;
+    function handleBackgroundClick() {
+      if (!backgroundSet) {
+        document.getElementById("bgInput").click();
+      } else {
+        clearCustomBackground();
+        backgroundSet = false;
+      }
+    }
+
+    document.getElementById("bgInput").addEventListener("change", function () {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const imageUrl = e.target.result;
+          document.body.style.backgroundImage = `url(${imageUrl})`;
+          document.body.style.backgroundSize = "cover";
+          localStorage.setItem("customBackground", imageUrl);
+          backgroundSet = true;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    function clearCustomBackground() {
+      localStorage.removeItem("customBackground");
+      document.body.style.backgroundImage = "none";
+    }
+    ///
   </script>
   <audio id="tingSound">
     <source src="ting.mp3" type="audio/mp3">
