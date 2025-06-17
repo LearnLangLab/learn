@@ -147,7 +147,7 @@
     }
     /* Ẩn nhãn số trên thiết bị có chiều rộng nhỏ hơn hoặc bằng 600px (điện thoại) */
     @media (max-width: 600px) {
-      .option-label {
+      .option-label, #bgButton {
         display: none;
       }
     }
@@ -211,7 +211,7 @@
     <option value="scoreboard">Thành tích</option>
     <!-- <option value="knownButton">Yes</option> -->
     <option value="skipButton">Skip</option>
-    <option value="bgButton">Chọn/Xóa nền</option>
+    <option value="bgButton">Nền</option>
   </select>
   <!-- chọn level -->
   <select id="levelSelector" onchange="changeLevel(this.value)">
@@ -235,7 +235,7 @@
   <audio id="bgMusic" src="PianoMusic.mp3" loop></audio>
   <button id="musicToggle" onclick="toggleMusic()">🎵</button>
   <input type="file" id="bgInput" accept="image/*" style="display: none" />
-  <button id="bgButton" onclick="handleBackgroundClick()">Chọn/Xóa nền</button>
+  <button id="bgButton" onclick="handleBackgroundClick()">Nền</button>
 
   <!-- <h2>🎮</h2> -->
   <h2></h2>
