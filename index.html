@@ -62,7 +62,7 @@
       z-index: 1000;
     }
 
-    #toggleTheme {
+    #toggleTheme, #knownButton, #skipButton {
       position: fixed;
       bottom: 10px;
       right: 10px;
@@ -71,6 +71,14 @@
       border-radius: 6px;
       cursor: pointer;
       z-index: 1000;
+    }
+
+    #knownButton {
+      bottom: 70px;
+    }
+
+    #skipButton {
+      bottom: 110px;
     }
 
     h2 {
@@ -198,6 +206,8 @@
     <option value="toggleTheme">Chủ đề</option>
     <option value="musicToggle">Music</option>
     <option value="scoreboard">Thành tích</option>
+    <!-- <option value="knownButton">Yes</option> -->
+    <option value="skipButton">Skip</option>
   </select>
   <!-- chọn level -->
   <select id="levelSelector" onchange="changeLevel(this.value)">
@@ -215,7 +225,8 @@
     <option value="16">HSK6-câu</option>
     <option value="21">hoi-dap</option>
   </select>
-
+  <!-- <button id="knownButton" onclick="markAsKnown()">✅ Yes</button> -->
+  <button id="skipButton" onclick="skipQuestion()">Skip</button> 
   <button id="toggleTheme" onclick="toggleTheme()">🌙 Nền tối</button>
   <audio id="bgMusic" src="PianoMusic.mp3" loop></audio>
   <button id="musicToggle" onclick="toggleMusic()">🎵</button>
@@ -395,7 +406,23 @@
       document.getElementById("toggleTheme").textContent = darkMode ? "☀️ Nền sáng" : "🌙 Nền tối";
       localStorage.setItem("theme", darkMode ? "dark" : "light");
     }
-
+    // nút đã biết câu hiện tại
+    function markAsKnown(){
+      if (currentQuestion && !answeredCorrectHanzi.includes(currentQuestion.hanzi)) {
+          answeredCorrectHanzi.push(currentQuestion.hanzi);
+        correctCount++;
+        updateScoreboard();
+       }
+      nextQuestion();
+    }
+    // Nút bỏ qua câu hiện tại
+    function skipQuestion(){
+      if (currentQuestion && !answeredCorrectHanzi.includes(currentQuestion.hanzi)) {
+        wrongCount++;
+        updateScoreboard();
+      }
+      nextQuestion();
+    }
     // bật tắt nhạc
     function toggleMusic() {
       const audio = document.getElementById("bgMusic");
