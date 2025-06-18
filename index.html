@@ -64,6 +64,12 @@
       color: #fff;
     }
 
+    body.dark .help-button {
+      background-color: #222;
+      color: #fff;
+      border-color: #888;
+    }
+
     #levelSelector {
       position: fixed;
       top: 50px;
@@ -244,6 +250,7 @@
   <button id="musicToggle" onclick="toggleMusic()">🎵</button>
   <input type="file" id="bgInput" accept="image/*" style="display: none" />
   <button id="bgButton" onclick="handleBackgroundClick()">Nền</button>
+  <button id="helpButton" onclick="showHelp()" class="help-button">❓</button>
 
   <!-- <h2>🎮</h2> -->
   <h2></h2>
@@ -383,6 +390,20 @@
       }
     }
     //
+    function showHelp() {
+      alert(`📘 Hướng dẫn sử dụng:
+      
+      - Ấn số 1, 2, 3 để chọn đáp án.
+      - Ấn phím ➡️ (phải) để qua câu tiếp theo (tính là đúng).
+      - Ấn phím ⬇️ (xuống) để qua câu tiếp theo (tính là sai).
+      - Ấn phím ⬆️ (lên) hoặc 0 để đọc lại câu hiện tại.
+      - Ấn số 9 để ẩn/hiện chữ pinyin.
+      - Ấn số 8 để ẩn/hiện chữ Hán.
+      - Ấn số 7 để ẩn/hiện toàn bộ nội dung trang.
+      - Có thể chọn hình nền tùy ý.
+      - Click "Skip" để chuyển nhanh câu không muốn làm.`);
+    }
+
     function changeLevel(level) {
       // 🧹 Reset kết quả và dữ liệu cũ
       correctCount = 0;
@@ -494,7 +515,7 @@
         }
       }
 
-      // Nút 9 để ẩn chữ tiếng hoa
+      // Nút 9 để ẩn chữ pinyin
       if ((event.code === "Digit9" || event.code === "Numpad9") && !event.target.matches("input, textarea")) {
         event.preventDefault();
         const pinyinText = document.getElementById("pinyinText");
