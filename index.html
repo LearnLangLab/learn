@@ -245,6 +245,7 @@
   </select>
   <!-- <button id="knownButton" onclick="markAsKnown()">✅ Yes</button> -->
   <button id="skipButton" onclick="skipQuestion()">Skip</button> 
+  <button id="autoButton" onclick="toggleAuto()">Auto OFF</button>
   <button id="toggleTheme" onclick="toggleTheme()">🌙 Nền tối</button>
   <audio id="bgMusic" src="PianoMusic.mp3" loop></audio>
   <button id="musicToggle" onclick="toggleMusic()">🎵</button>
@@ -269,13 +270,49 @@
     let correctCount = 0;
     let wrongCount = 0;
 
+    // Auto mode
+    let autoMode = false;
+    function toggleAuto() {
+      autoMode = !autoMode;
+      document.getElementById("autoButton").textContent = autoMode ? "Auto ON" : "Auto OFF";
+    }
+
+    // Hàm lặp lại đọc 3 lần (dùng trong auto mode)
+    function speakCurrentWithRepeat(times) {
+      if (!currentQuestion || !currentQuestion.hanzi) return;
+
+      let repeatCount = 0;
+      const delayBetweenReads = 800; // mili giây = 0.8s
+
+      function playOnce() {
+        speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(currentQuestion.hanzi);
+        utterance.lang = 'zh-CN';
+        utterance.rate = 0.7;
+
+        utterance.onend = function () {
+          repeatCount++;
+          if (repeatCount < times) {
+            setTimeout(playOnce, delayBetweenReads); // Thêm khoảng nghỉ
+          } else {
+            if (autoMode) {
+              setTimeout(nextQuestion, delayBetweenReads); // Nghỉ chút rồi sang câu
+            }
+          }
+        };
+        speechSynthesis.speak(utterance);
+      }
+      playOnce();
+    }
+
     function shuffle(array) {
       for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
       }
     }
-    
+
     function updateScoreboard() {
       document.getElementById("correct").textContent = correctCount;
       document.getElementById("wrong").textContent = wrongCount;
@@ -372,7 +409,11 @@
     function nextQuestion() {
       showQuestion();
       // 🔊 Đọc câu ngay sau khi hiện ra
-      speakCurrent();
+      if (autoMode) {
+        speakCurrentWithRepeat(3);
+      } else {
+        speakCurrent();
+      }
     }
     // 2 function quản lý: ẩn/hiện
     function toggleVisibilityById(id) {
@@ -392,7 +433,7 @@
     //
     function showHelp() {
       alert(`📘 Hướng dẫn sử dụng:
-      
+
       - Ấn số 1, 2, 3 để chọn đáp án.
       - Ấn phím ➡️ (phải) để qua câu tiếp theo (tính là đúng).
       - Ấn phím ⬇️ (xuống) để qua câu tiếp theo (tính là sai).
