@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TWYWZL4VDL"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-QSCJ61WEJZ"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
 
-    gtag('config', 'G-TWYWZL4VDL');
+    gtag('config', 'G-QSCJ61WEJZ');
   </script>
 
   <title>Game học từ vựng tiếng Trung</title>
@@ -43,6 +43,18 @@
       background-repeat: no-repeat;
       background-position: center;
       background-attachment: fixed;
+    }
+
+    #settingPanel {
+      background-color: rgba(255, 255, 255);
+      color: #000;
+      backdrop-filter: blur(6px);
+    }
+
+    body.dark #settingPanel {
+      background-color: rgba(34, 34, 34);
+      color: #fff;
+      border: 1px solid #555;
     }
 
     #scoreboard {
@@ -214,6 +226,32 @@
     ✅ Đúng: <span id="correct">0</span> / <span id="total">0</span><br>
     ❌  Sai: <span id="wrong">0</span>
   </div>
+  <button id="btnSetting">⚙️</button>
+  <div id="settingPanel" style="display:none; position:absolute; top:50px; left:150px; padding:10px; border:1px solid #ccc; border-radius:8px;">
+    <label>Tốc độ đọc:
+      <input type="number" id="settingRate" min="0.5" max="2" step="0.1" value="0.7">
+    </label>
+    <br><br>
+    <label>Khoảng nghỉ:
+      <input type="number" id="settingDelay" min="0" max="3000" step="100" value="800">
+    </label>
+    <br><br>
+    <label>Số lần đọc:
+      <input type="number" id="settingRepeat" min="1" max="5" step="1" value="3">
+    </label>
+    <br><br>
+    <label>Chế độ tự động:
+      <button id="autoButton" onclick="toggleAuto()">Auto OFF</button>
+    </label>
+    <br><br>
+    <audio id="bgMusic" src="PianoMusic.mp3" loop></audio>
+    <label>Nhạc nền:
+    <button id="musicToggle" onclick="toggleMusic()">🎵</button>
+    </label>
+    <br><br>
+    <button id="btnSaveSetting">Lưu</button>
+  </div>
+
   <!-- Ẩn/Hiện -->
   <select id="visibilitySelect" onchange="handleVisibilityChange()" style="position: fixed; top: 10px; right: 10px; z-index: 1000; padding: 5px 10px;">
     <option value="">Ẩn/Hiện</option>
@@ -255,9 +293,9 @@
   </select>
   <!-- <button id="knownButton" onclick="markAsKnown()">✅ Yes</button> -->
   <button id="skipButton" onclick="skipQuestion()">Skip</button> 
+
   <button id="toggleTheme" onclick="toggleTheme()">🌙 Nền tối</button>
-  <audio id="bgMusic" src="PianoMusic.mp3" loop></audio>
-  <button id="musicToggle" onclick="toggleMusic()">🎵</button>
+
   <input type="file" id="bgInput" accept="image/*" style="display: none" />
   <button id="bgButton" onclick="handleBackgroundClick()">Nền</button>
   <button id="helpButton" onclick="showHelp()" class="help-button">❓</button>
@@ -279,13 +317,66 @@
     let correctCount = 0;
     let wrongCount = 0;
 
+    // Auto mode
+    let autoMode = false;
+    function toggleAuto() {
+      autoMode = !autoMode;
+      document.getElementById("autoButton").textContent = autoMode ? "Auto ON" : "Auto OFF";
+    }
+
+    // Hàm lặp lại đọc 3 lần (dùng trong auto mode)
+    function speakCurrentWithRepeat(times = repeatTimes) {
+      if (!currentQuestion || !currentQuestion.hanzi) return;
+
+      let repeatCount = 0;
+
+      function playOnce() {
+        speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(currentQuestion.hanzi);
+        utterance.lang = 'zh-CN';
+        utterance.rate = readRate;
+
+        utterance.onend = function () {
+          repeatCount++;
+          if (repeatCount < times) {
+            setTimeout(playOnce, delayBetweenReads);
+          } else {
+            if (autoMode) {
+              setTimeout(nextQuestion, delayBetweenReads);
+            }
+          }
+        };
+        speechSynthesis.speak(utterance);
+      }
+      playOnce();
+    }
+
+    let readRate = 0.7;
+    let delayBetweenReads = 800;
+    let repeatTimes = 3;
+    // Nút setting
+    document.getElementById("btnSetting").addEventListener("click", function() {
+      const panel = document.getElementById("settingPanel");
+      panel.style.display = (panel.style.display === "none") ? "block" : "none";
+    });
+    // Nút lưu cài đặt
+    document.getElementById("btnSaveSetting").addEventListener("click", function() {
+      readRate = parseFloat(document.getElementById("settingRate").value);
+      delayBetweenReads = parseInt(document.getElementById("settingDelay").value);
+      repeatTimes = parseInt(document.getElementById("settingRepeat").value);
+
+      alert("Đã lưu cài đặt!");
+      document.getElementById("settingPanel").style.display = "none";
+    });
+
     function shuffle(array) {
       for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
       }
     }
-    
+
     function updateScoreboard() {
       document.getElementById("correct").textContent = correctCount;
       document.getElementById("wrong").textContent = wrongCount;
@@ -382,7 +473,11 @@
     function nextQuestion() {
       showQuestion();
       // 🔊 Đọc câu ngay sau khi hiện ra
-      speakCurrent();
+      if (autoMode) {
+        speakCurrentWithRepeat(3);
+      } else {
+        speakCurrent();
+      }
     }
     // 2 function quản lý: ẩn/hiện
     function toggleVisibilityById(id) {
@@ -402,7 +497,7 @@
     //
     function showHelp() {
       alert(`📘 Hướng dẫn sử dụng:
-      
+
       - Ấn số 1, 2, 3 để chọn đáp án.
       - Ấn phím ➡️ (phải) để qua câu tiếp theo (tính là đúng).
       - Ấn phím ⬇️ (xuống) để qua câu tiếp theo (tính là sai).
